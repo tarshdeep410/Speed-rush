@@ -1,27 +1,119 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>SPEED//RUSH</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>SPEED//RUSH</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+  <canvas id="game"></canvas>
 
-<canvas id="game"></canvas>
+  <div id="hud">
+    <div class="hud-item">
+      <span class="small-label">DISTANCE</span>
+      <strong id="distance">0m</strong>
+    </div>
+    <div class="hud-item timer-box">
+      <span class="small-label">TIME</span>
+      <strong id="time">0.00</strong>
+    </div>
+    <div class="hud-item">
+      <span class="small-label">BEST</span>
+      <strong id="best">--</strong>
+    </div>
+  </div>
 
-<div id="hud">
-    <div id="distance">100m</div>
-    <div id="time">0.00</div>
-</div>
+  <div id="meter-panel">
+    <div class="meter-heading">
+      <span>SPRINT RHYTHM</span>
+      <strong id="cadenceValue">50</strong>
+    </div>
 
-<div id="message">SPEED//RUSH</div>
+    <div id="cadenceTrack">
+      <div class="danger-zone"></div>
+      <div class="safe-zone"></div>
+      <div class="danger-zone"></div>
+      <div id="needle"></div>
+    </div>
 
-<div id="controls">
-    <button id="left">LEFT</button>
-    <button id="right">RIGHT</button>
-</div>
+    <div class="meter-legend">
+      <span>TOO EARLY</span>
+      <span>PERFECT</span>
+      <span>TOO LATE</span>
+    </div>
 
-<script src="game.js"></script>
+    <div class="meter-heading stamina-heading">
+      <span>STAMINA</span>
+      <strong id="staminaValue">100%</strong>
+    </div>
 
+    <div id="staminaTrack">
+      <div id="staminaFill"></div>
+    </div>
+
+    <div id="feedback">TIME YOUR NEXT STEP</div>
+  </div>
+
+  <div id="menu">
+    <div class="game-logo">SPEED<span>//</span>RUSH</div>
+    <p class="subtitle">FIND YOUR RHYTHM. OWN THE TRACK.</p>
+
+    <div class="customise">
+      <label>
+        RUNNER
+        <select id="skinChoice">
+          <option value="#9b623c">Warm brown</option>
+          <option value="#e0ac80">Light</option>
+          <option value="#c88658">Medium</option>
+          <option value="#70452f">Deep brown</option>
+          <option value="#f0c7a0">Fair</option>
+        </select>
+      </label>
+
+      <label>
+        KIT
+        <select id="kitChoice">
+          <option value="#42e8f5">Electric cyan</option>
+          <option value="#ff4d75">Coral red</option>
+          <option value="#ffd447">Gold</option>
+          <option value="#a78bfa">Violet</option>
+          <option value="#f3f4f6">White</option>
+        </select>
+      </label>
+    </div>
+
+    <p class="instructions">
+      Tap LEFT and RIGHT alternately.<br>
+      Hit the green zone to accelerate.<br>
+      Mistimed steps waste energy.
+    </p>
+
+    <button id="startButton">START RACE</button>
+    <p class="footnote">100 METRES · SOLO SPRINT</p>
+  </div>
+
+  <div id="countdown"></div>
+
+  <div id="raceResult">
+    <div class="result-label">RACE COMPLETE</div>
+    <div id="finalTime">0.00</div>
+    <div id="resultMessage">NICE RUN</div>
+    <button id="retryButton">RACE AGAIN</button>
+    <button id="menuButton">CUSTOMISE</button>
+  </div>
+
+  <div id="controls">
+    <button id="left" class="leg-button">
+      <span class="leg-arrow">◀</span>
+      LEFT
+    </button>
+    <button id="right" class="leg-button">
+      RIGHT
+      <span class="leg-arrow">▶</span>
+    </button>
+  </div>
+
+  <script src="game.js"></script>
 </body>
 </html>
