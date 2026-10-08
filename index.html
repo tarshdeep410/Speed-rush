@@ -1,68 +1,92 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-  <title>SPEED//RUSH</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>SPEED//RUSH</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101820;color:white;font-family:Arial,sans-serif;touch-action:none;user-select:none}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+#hud{position:fixed;top:max(12px,env(safe-area-inset-top));right:12px;width:112px;z-index:3;display:none;text-shadow:0 2px 5px #000}
+.hbox{background:#101820d9;border:1px solid #ffffff30;border-radius:5px;padding:7px;margin-bottom:6px}
+.label{font-size:9px;letter-spacing:1.5px;color:#c4d1dc;font-weight:bold}
+.value{font-size:20px;font-weight:900;margin-top:3px;font-variant-numeric:tabular-nums}
+#cadenceBar{height:9px;margin-top:6px;background:#26303a;overflow:hidden;border-radius:1px;position:relative}
+#cadenceFill{height:100%;width:0;background:#4ce9b0}
+#cadenceMarker{position:absolute;top:0;bottom:0;left:42%;width:16%;background:#ffffff25;border-left:1px solid white;border-right:1px solid white}
+#staminaBar{height:7px;background:#28323b;margin-top:6px;overflow:hidden;border-radius:1px}
+#staminaFill{height:100%;width:100%;background:#42f58d}
+#reaction{font-size:12px;margin-top:4px;font-weight:bold}
+#topCoins{position:fixed;z-index:4;top:max(14px,env(safe-area-inset-top));left:14px;background:#101820db;border:1px solid #ffffff30;border-radius:5px;padding:8px 10px;font-weight:bold;font-size:13px}
+.overlay{position:fixed;z-index:5;inset:0;display:flex;align-items:center;justify-content:center;padding:18px;background:linear-gradient(180deg,#08111a55,#08111aee)}
+.panel{width:min(440px,100%);max-height:92%;overflow:auto;background:#111d29f5;border:1px solid #ffffff30;border-radius:14px;padding:22px;text-align:center;box-shadow:0 12px 45px #0008}
+.logo{font-size:clamp(35px,9vw,53px);font-weight:1000;font-style:italic;letter-spacing:-2px}
+.logo span{color:#45eaf3}
+.subtitle{font-size:9px;letter-spacing:2px;color:#b9cad7;margin:5px 0 15px}
+#preview{position:relative;width:100%;height:115px;border-radius:8px;overflow:hidden;background:#25394a;margin-bottom:13px}
+#preview canvas{position:absolute;width:100%;height:100%}
+.custom{display:grid;grid-template-columns:1fr 1fr;gap:9px;text-align:left}
+label{font-size:9px;font-weight:900;letter-spacing:1px;color:#cbd8e2}
+select{display:block;width:100%;margin-top:5px;background:#223344;color:white;border:1px solid #627487;border-radius:6px;padding:10px 5px;font-size:12px}
+button{width:100%;padding:14px;border:0;border-radius:7px;background:#56eee5;color:#09202a;font-weight:1000;letter-spacing:1.5px;font-size:13px;margin-top:13px}
+button.secondary{background:#283b4b;color:white;margin-top:8px}
+.hint{font-size:11px;line-height:1.65;color:#c2d0db;margin:13px 0 0}
+#startText{position:fixed;z-index:4;inset:0;display:none;align-items:center;justify-content:center;font-size:clamp(60px,18vw,110px);font-weight:1000;font-style:italic;text-shadow:0 3px 20px #000;pointer-events:none}
+#result{display:none}
+#resultTime{font-size:58px;font-weight:1000;font-variant-numeric:tabular-nums}
+#resultInfo{font-size:13px;line-height:1.8;color:#d2dfe8}
+#tapHelp{position:fixed;bottom:max(12px,env(safe-area-inset-bottom));left:0;right:0;text-align:center;font-size:10px;letter-spacing:1px;color:#ffffffb5;pointer-events:none;z-index:2;display:none}
+#falseStart{color:#ff6a77;font-weight:900;min-height:18px;font-size:12px}
+@media(max-height:650px){.panel{padding:13px;max-height:96%}#preview{height:80px}.subtitle{margin-bottom:8px}button{padding:10px;margin-top:8px}.hint{margin-top:8px}}
+</style>
 </head>
 <body>
-  <canvas id="game"></canvas>
+<canvas id="game"></canvas>
 
-  <div id="hud">
-    <div class="hud-item">
-      <span class="small-label">DISTANCE</span>
-      <strong id="distance">0m</strong>
-    </div>
-    <div class="hud-item timer-box">
-      <span class="small-label">TIME</span>
-      <strong id="time">0.00</strong>
-    </div>
-    <div class="hud-item">
-      <span class="small-label">BEST</span>
-      <strong id="best">--</strong>
-    </div>
+<div id="topCoins">🪙 <span id="coins">0</span></div>
+
+<div id="hud">
+  <div class="hbox">
+    <div class="label">DISTANCE</div>
+    <div class="value" id="distance">0m</div>
+    <div class="label">OF 100M</div>
   </div>
-
-  <div id="meter-panel">
-    <div class="meter-heading">
-      <span>SPRINT RHYTHM</span>
-      <strong id="cadenceValue">50</strong>
-    </div>
-
-    <div id="cadenceTrack">
-      <div class="danger-zone"></div>
-      <div class="safe-zone"></div>
-      <div class="danger-zone"></div>
-      <div id="needle"></div>
-    </div>
-
-    <div class="meter-legend">
-      <span>TOO EARLY</span>
-      <span>PERFECT</span>
-      <span>TOO LATE</span>
-    </div>
-
-    <div class="meter-heading stamina-heading">
-      <span>STAMINA</span>
-      <strong id="staminaValue">100%</strong>
-    </div>
-
-    <div id="staminaTrack">
-      <div id="staminaFill"></div>
-    </div>
-
-    <div id="feedback">TIME YOUR NEXT STEP</div>
+  <div class="hbox">
+    <div class="label">CADENCE</div>
+    <div class="value" id="cadenceText">BUILD</div>
+    <div id="cadenceBar"><div id="cadenceFill"></div><div id="cadenceMarker"></div></div>
   </div>
+  <div class="hbox">
+    <div class="label">STAMINA</div>
+    <div class="value" id="staminaText">100%</div>
+    <div id="staminaBar"><div id="staminaFill"></div></div>
+  </div>
+  <div class="hbox">
+    <div class="label">TIME</div>
+    <div class="value" id="time">0.00</div>
+    <div class="label">REACTION</div>
+    <div id="reaction">--</div>
+  </div>
+  <div class="hbox">
+    <div class="label">POSITION</div>
+    <div class="value" id="position">1st</div>
+  </div>
+</div>
 
-  <div id="menu">
-    <div class="game-logo">SPEED<span>//</span>RUSH</div>
-    <p class="subtitle">FIND YOUR RHYTHM. OWN THE TRACK.</p>
+<div id="tapHelp">TAP LEFT / RIGHT SIDES ALTERNATELY · HOLD TWO FINGERS NEAR THE FINISH TO DIVE</div>
+<div id="startText">READY</div>
 
-    <div class="customise">
-      <label>
-        RUNNER
-        <select id="skinChoice">
+<div class="overlay" id="menu">
+  <div class="panel">
+    <div class="logo">SPEED<span>//</span>RUSH</div>
+    <div class="subtitle">100 METRES · SPRINT CHAMPIONSHIP</div>
+    <div id="preview"><canvas id="previewCanvas"></canvas></div>
+
+    <div class="custom">
+      <label>SKIN TONE
+        <select id="skin">
           <option value="#9b623c">Warm brown</option>
           <option value="#e0ac80">Light</option>
           <option value="#c88658">Medium</option>
@@ -70,50 +94,538 @@
           <option value="#f0c7a0">Fair</option>
         </select>
       </label>
-
-      <label>
-        KIT
-        <select id="kitChoice">
+      <label>RUNNING KIT
+        <select id="kit">
           <option value="#42e8f5">Electric cyan</option>
           <option value="#ff4d75">Coral red</option>
           <option value="#ffd447">Gold</option>
           <option value="#a78bfa">Violet</option>
           <option value="#f3f4f6">White</option>
+          <option value="#48df83">Green</option>
+        </select>
+      </label>
+      <label>HAIR
+        <select id="hair">
+          <option value="#201b20">Black</option>
+          <option value="#69462e">Brown</option>
+          <option value="#d6b16b">Blond</option>
+          <option value="#bd4740">Red</option>
+          <option value="#dce6ee">Silver</option>
+        </select>
+      </label>
+      <label>LANE
+        <select id="lane">
+          <option value="4">Lane 4</option>
+          <option value="1">Lane 1</option>
+          <option value="2">Lane 2</option>
+          <option value="3">Lane 3</option>
+          <option value="5">Lane 5</option>
+          <option value="6">Lane 6</option>
         </select>
       </label>
     </div>
 
-    <p class="instructions">
-      Tap LEFT and RIGHT alternately.<br>
-      Hit the green zone to accelerate.<br>
-      Mistimed steps waste energy.
-    </p>
-
-    <button id="startButton">START RACE</button>
-    <p class="footnote">100 METRES · SOLO SPRINT</p>
+    <div class="hint">Tap opposite sides of the screen alternately. Build a steady rhythm: rushing or dragging your steps costs speed. Start only after GO!</div>
+    <div id="falseStart"></div>
+    <button id="start">ENTER THE TRACK</button>
+    <div class="hint">Coins are awarded for your finishing position. Your balance is saved on this device.</div>
   </div>
+</div>
 
-  <div id="countdown"></div>
-
-  <div id="raceResult">
-    <div class="result-label">RACE COMPLETE</div>
-    <div id="finalTime">0.00</div>
-    <div id="resultMessage">NICE RUN</div>
-    <button id="retryButton">RACE AGAIN</button>
-    <button id="menuButton">CUSTOMISE</button>
+<div class="overlay" id="result">
+  <div class="panel">
+    <div class="logo">FINISH<span>!</span></div>
+    <div id="resultTime">0.00</div>
+    <div id="resultInfo"></div>
+    <button id="again">RACE AGAIN</button>
+    <button class="secondary" id="customise">CUSTOMISE RUNNER</button>
   </div>
+</div>
 
-  <div id="controls">
-    <button id="left" class="leg-button">
-      <span class="leg-arrow">◀</span>
-      LEFT
-    </button>
-    <button id="right" class="leg-button">
-      RIGHT
-      <span class="leg-arrow">▶</span>
-    </button>
-  </div>
+<script>
+(() => {
+"use strict";
 
-  <script src="game.js"></script>
+const $ = id => document.getElementById(id);
+const canvas = $("game");
+const ctx = canvas.getContext("2d");
+const preview = $("previewCanvas");
+const pctx = preview.getContext("2d");
+
+let W=innerWidth,H=innerHeight,dpr=1;
+let state="menu",lastFrame=0;
+let distance=0,time=0,stamina=100,speed=0,reaction=null;
+let goTime=0,firstTap=false,lastTap=0,lastSide="",cadenceQuality=0;
+let falseStart=false,dive=false,diveDone=false,diveHoldAt=0;
+let pointerIds=new Set(),diveTimer=0,finishPlace=1,earned=0;
+let coins=0,best=0,playerLane=4;
+let skin="#9b623c",kit="#42e8f5",hair="#201b20";
+let armPhase=0,trackOffset=0,shake=0,feedbackText="";
+let countdownTimers=[];
+let runners=[];
+
+try {
+  coins=Number(localStorage.getItem("srCoins"))||0;
+  best=Number(localStorage.getItem("srBest"))||0;
+} catch(e) {}
+
+function save() {
+  try {
+    localStorage.setItem("srCoins",String(coins));
+    localStorage.setItem("srBest",String(best));
+  } catch(e) {}
+  $("coins").textContent=coins;
+}
+
+function resize() {
+  W=innerWidth; H=innerHeight;
+  dpr=Math.min(devicePixelRatio||1,2);
+  for (const c of [canvas,preview]) {
+    const w=c===canvas?W:$("preview").clientWidth;
+    const h=c===canvas?H:$("preview").clientHeight;
+    c.width=Math.round(w*dpr);
+    c.height=Math.round(h*dpr);
+    c.style.width=w+"px"; c.style.height=h+"px";
+  }
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  pctx.setTransform(dpr,0,0,dpr,0,0);
+}
+addEventListener("resize",resize);
+resize();
+
+function clamp(n,a,b){return Math.max(a,Math.min(b,n))}
+function ordinal(n){return n===1?"1st":n===2?"2nd":n===3?"3rd":n+"th"}
+
+function line(c,x1,y1,x2,y2,width,color) {
+  c.strokeStyle=color;c.lineWidth=width;c.lineCap="round";
+  c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();
+}
+
+function ellipse(c,x,y,rx,ry,color) {
+  c.fillStyle=color;c.beginPath();c.ellipse(x,y,rx,ry,0,0,Math.PI*2);c.fill();
+}
+
+function drawRunner(c,x,y,s,phase,look,colors,diving=false) {
+  const [skinTone,shirt,hairTone]=colors;
+  c.save();c.translate(x,y);c.scale(s,s);
+
+  if(diving) {
+    c.rotate(-0.20);
+    line(c,-18,-24,10,-19,12,shirt);
+    line(c,8,-20,28,-12,8,skinTone);
+    line(c,-12,-21,-27,-11,7,skinTone);
+    line(c,-10,-22,-27,-16,5,"#f1f4f5");
+    line(c,5,-18,25,-9,7,"#172332");
+    ellipse(c,17,-29,8,9,skinTone);
+    ellipse(c,15,-35,9,5,hairTone);
+    c.restore();return;
+  }
+
+  const swing=Math.sin(phase)*23;
+  const lift=Math.max(0,Math.cos(phase))*13;
+
+  // Far leg
+  line(c,-4,-28,-13+swing*0.45,-14-lift*0.25,8,"#172332");
+  line(c,-13+swing*0.45,-14-lift*0.25,-23+swing*0.7,-5,6,skinTone);
+  line(c,-23+swing*0.7,-5,-12+swing*0.7,-4,5,"#f5f5f5");
+
+  // Near leg
+  line(c,3,-29,13-swing*0.45,-16-lift*0.3,9,shirt);
+  line(c,13-swing*0.45,-16-lift*0.3,22-swing*0.7,-5,6,skinTone);
+  line(c,22-swing*0.7,-5,34-swing*0.7,-4,5,"#f5f5f5");
+
+  // Torso and race vest
+  c.fillStyle=shirt;
+  c.beginPath();
+  c.moveTo(-9,-60);c.lineTo(8,-59);c.lineTo(13,-30);
+  c.lineTo(-7,-27);c.lineTo(-14,-42);c.closePath();c.fill();
+
+  // Arm swing opposes the legs
+  line(c,-8,-54,-17-swing*0.38,-42,8,skinTone);
+  line(c,-17-swing*0.38,-42,-11-swing*0.6,-34,6,skinTone);
+  line(c,7,-54,17+swing*0.38,-43,8,skinTone);
+  line(c,17+swing*0.38,-43,10+swing*0.6,-35,6,skinTone);
+
+  // Neck and side-profile head
+  c.fillStyle=skinTone;c.fillRect(-2,-66,8,10);
+  ellipse(c,4,-74,9,11,skinTone);
+  ellipse(c,1,-80,10,6,hairTone);
+
+  // Nose
+  c.fillStyle=skinTone;
+  c.beginPath();c.moveTo(11,-75);c.lineTo(17,-72);c.lineTo(11,-70);c.fill();
+
+  // Hair silhouette
+  c.fillStyle=hairTone;
+  c.beginPath();c.ellipse(1,-80,10,6,0,Math.PI,Math.PI*2);c.fill();
+
+  // Bib
+  c.fillStyle="#f7f8f8";c.fillRect(-5,-53,12,9);
+  c.fillStyle="#152332";c.font="bold 5px Arial";c.textAlign="center";
+  c.fillText("SR",1,-47);
+
+  c.restore();
+}
+
+function drawTrack(c,w,h,playerDistance=distance,showCrowd=true) {
+  const horizon=h*0.30;
+  const ground=c.createLinearGradient(0,horizon,0,h);
+  ground.addColorStop(0,"#596b72");
+  ground.addColorStop(0.25,"#b85d50");
+  ground.addColorStop(1,"#70343a");
+  c.fillStyle=ground;c.fillRect(0,0,w,h);
+
+  // Stadium seating
+  c.fillStyle="#162a3a";c.fillRect(0,0,w,horizon);
+  c.fillStyle="#30485a";c.fillRect(0,horizon*0.35,w,horizon*0.65);
+
+  if(showCrowd) {
+    const crowdColors=["#d8dfe4","#e8b7a5","#5e9bb3","#e8d28c","#9caec0","#d1d3cd"];
+    for(let i=0;i<Math.ceil(w/7);i++) {
+      for(let j=0;j<5;j++) {
+        c.fillStyle=crowdColors[(i*3+j*7)%crowdColors.length];
+        c.fillRect(i*7,horizon*0.10+j*horizon*0.105,3,5);
+      }
+    }
+  }
+
+  const trackTop=horizon;
+  const laneHeight=(h-trackTop)*0.105;
+  for(let i=0;i<6;i++) {
+    const y=trackTop+i*laneHeight;
+    c.fillStyle=i%2===0?"#a94e46":"#b6574b";
+    c.fillRect(0,y,w,laneHeight);
+    c.strokeStyle="#f1e6d7";c.lineWidth=1;
+    c.beginPath();c.moveTo(0,y);c.lineTo(w,y);c.stroke();
+    c.fillStyle="#ffffffa0";c.font="bold "+Math.max(9,w*0.022)+"px Arial";
+    c.fillText(String(i+1),8,y+laneHeight*0.65);
+  }
+
+  // Perspective-free side-view finish line
+  const finishX=w*0.92;
+  c.fillStyle="#fff";
+  for(let i=0;i<6;i++) {
+    for(let j=0;j<4;j++) {
+      if((i+j)%2===0)
+        c.fillRect(finishX+j*6,trackTop+i*laneHeight+laneHeight*0.25,6,laneHeight*0.25);
+    }
+  }
+  c.fillStyle="#fff";
+  c.font="bold 10px Arial";c.fillText("FINISH",finishX-14,trackTop-7);
+
+  // Moving small lane marks
+  const spacing=70;
+  const offset=(trackOffset%spacing);
+  for(let x=-spacing;x<w+spacing;x+=spacing) {
+    const xx=x-offset;
+    c.fillStyle="#f5d6c855";
+    c.fillRect(xx,trackTop+laneHeight*0.3,25,laneHeight*0.025);
+    c.fillRect(xx,trackTop+laneHeight*2.3,25,laneHeight*0.025);
+  }
+}
+
+function drawScene(c,w,h,isPreview=false) {
+  c.clearRect(0,0,w,h);
+
+  if(isPreview) {
+    const g=c.createLinearGradient(0,0,0,h);
+    g.addColorStop(0,"#304b60");g.addColorStop(1,"#8b5149");
+    c.fillStyle=g;c.fillRect(0,0,w,h);
+    c.fillStyle="#1d3040";c.fillRect(0,0,w,h*0.34);
+    for(let i=0;i<w;i+=9) {
+      c.fillStyle=i%2?"#d1d7db":"#7ba0b2";
+      c.fillRect(i,12+(i%3)*7,4,8);
+    }
+    c.fillStyle="#b45449";c.fillRect(0,h*0.52,w,h*0.48);
+    c.strokeStyle="#f4e7dc";c.beginPath();c.moveTo(0,h*.53);c.lineTo(w,h*.53);c.stroke();
+    drawRunner(c,w*.48,h*.89,1.2,performance.now()*.008,false,[skin,kit,hair]);
+    return;
+  }
+
+  drawTrack(c,w,h);
+
+  // Opponents in separate lanes
+  const laneHeight=(h-h*.30)*0.105;
+  const trackTop=h*.30;
+  for(const r of runners) {
+    const x=w*(0.06+0.86*clamp(r.distance/100,0,1));
+    const y=trackTop+(r.lane-0.5)*laneHeight+laneHeight*0.85;
+    drawRunner(c,x,y,clamp(laneHeight/55,0.55,0.85),armPhase+r.phase,false,[r.skin,r.kit,r.hair],r.diving);
+  }
+
+  const playerY=trackTop+(playerLane-0.5)*laneHeight+laneHeight*0.86;
+  const playerX=w*(0.06+0.86*clamp(distance/100,0,1));
+
+  c.save();
+  if(shake>0)c.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);
+  drawRunner(c,playerX,playerY,clamp(laneHeight/55,0.58,0.95),armPhase,true,[skin,kit,hair],dive);
+  c.restore();
+}
+
+function updateHUD() {
+  $("distance").textContent=Math.floor(distance)+"m";
+  $("time").textContent=time.toFixed(2);
+  $("staminaText").textContent=Math.round(stamina)+"%";
+  $("staminaFill").style.width=stamina+"%";
+  $("cadenceFill").style.width=(cadenceQuality*100)+"%";
+  $("cadenceText").textContent=
+    cadenceQuality>.72?"GOOD":cadenceQuality>.4?"OK":"BUILD";
+  $("reaction").textContent=reaction===null?"--":reaction.toFixed(3)+"s";
+  const place=getPosition();
+  $("position").textContent=ordinal(place);
+}
+
+function getPosition() {
+  return 1+runners.filter(r=>r.distance>distance).length;
+}
+
+function makeRunners() {
+  runners=[];
+  const colours=["#ff536e","#f2c94c","#a78bfa","#53e0b0","#f1f5f9"];
+  let n=0;
+  for(let laneNum=1;laneNum<=6;laneNum++) {
+    if(laneNum===playerLane)continue;
+    runners.push({
+      lane:laneNum,distance:0,speed:5.6+Math.random()*1.5,
+      skill:0.85+Math.random()*0.35,phase:n*1.4,
+      skin:["#c88658","#9b623c","#e0ac80","#70452f"][n%4],
+      kit:colours[n%colours.length],
+      hair:["#201b20","#69462e","#201b20","#d6b16b"][n%4],
+      diving:false
+    });
+    n++;
+  }
+}
+
+function clearCountdowns() {
+  countdownTimers.forEach(clearTimeout);
+  countdownTimers=[];
+}
+
+function startRace() {
+  clearCountdowns();
+  skin=$("skin").value;kit=$("kit").value;hair=$("hair").value;
+  playerLane=Number($("lane").value);
+
+  distance=0;time=0;speed=0;stamina=100;
+  reaction=null;firstTap=false;lastTap=0;lastSide="";
+  cadenceQuality=0;falseStart=false;dive=false;diveDone=false;
+  feedbackText="";trackOffset=0;armPhase=0;shake=0;
+  pointerIds.clear();
+
+  makeRunners();
+  $("menu").style.display="none";
+  $("result").style.display="none";
+  $("hud").style.display="block";
+  $("tapHelp").style.display="block";
+  $("startText").style.display="flex";
+  state="ready";
+  const sequence=[["READY",500],["SET",750],["GO!",650]];
+  let delay=0;
+
+  sequence.forEach(([word,duration],index)=>{
+    const id=setTimeout(()=>{
+      if(state!=="ready")return;
+      $("startText").textContent=word;
+      if(index===2) {
+        state="race";
+        goTime=performance.now();
+        $("startText").style.color="#6affad";
+        setTimeout(()=>{
+          if(state==="race"||state==="finished")$("startText").style.display="none";
+        },450);
+      }
+    },delay);
+    countdownTimers.push(id);
+    delay+=duration;
+  });
+
+  $("startText").style.color="white";
+  updateHUD();
+}
+
+function doFalseStart() {
+  if(state!=="ready")return;
+  falseStart=true;state="false";
+  clearCountdowns();
+  $("startText").textContent="FALSE START";
+  $("startText").style.color="#ff596b";
+  $("falseStart").textContent="You moved before GO! Try again.";
+  setTimeout(()=>{
+    $("startText").style.display="none";
+    $("hud").style.display="none";
+    $("tapHelp").style.display="none";
+    $("menu").style.display="flex";
+    state="menu";
+  },1200);
+}
+
+function step(side) {
+  if(state==="ready"){doFalseStart();return}
+  if(state!=="race")return;
+
+  const now=performance.now();
+  if(!firstTap) {
+    firstTap=true;
+    reaction=(now-goTime)/1000;
+  }
+
+  if(side===lastSide)return;
+
+  const gap=lastTap?now-lastTap:250;
+  lastTap=now;
+  lastSide=side;
+
+  // Best sprint rhythm is around 220–330 ms between alternating steps.
+  // Too fast or too slow reduces the speed gain.
+  const ideal=275;
+  let rhythm=1-Math.abs(gap-ideal)/350;
+  rhythm=clamp(rhythm,0,1);
+
+  if(gap<135)rhythm*=0.15;
+  if(gap>650)rhythm*=0.18;
+
+  cadenceQuality=rhythm;
+  const gain=0.10+rhythm*0.72;
+  speed=clamp(speed+gain,0,11.5);
+  stamina=clamp(stamina-(0.16+speed*0.025)+(rhythm*0.12),0,100);
+  armPhase+=side==="left"?1.1:1.45;
+  shake=1+speed*.15;
+  updateHUD();
+}
+
+function finishRace() {
+  if(state!=="race")return;
+  distance=100;
+  state="finished";
+  dive=false;
+
+  finishPlace=getPosition();
+  const awards=[100,65,45,30,20,10];
+  earned=awards[Math.min(finishPlace-1,awards.length-1)]||10;
+  if(diveDone)earned+=5;
+  coins+=earned;
+  save();
+
+  if(!best||time<best) {
+    best=time;
+    try{localStorage.setItem("srBest",String(best))}catch(e){}
+  }
+
+  $("resultTime").textContent=time.toFixed(2)+"s";
+  $("resultInfo").innerHTML=
+    "FINISHING POSITION: <b>"+ordinal(finishPlace)+"</b><br>"+
+    "REACTION TIME: <b>"+(reaction===null?"--":reaction.toFixed(3)+"s")+"</b><br>"+
+    "REWARD: <b>+"+earned+" gold coins</b>"+
+    (diveDone?"<br>FINISHING DIVE: +5 coins":"")+
+    "<br>PERSONAL BEST: <b>"+best.toFixed(2)+"s</b>";
+
+  $("result").style.display="flex";
+  $("hud").style.display="none";
+  $("tapHelp").style.display="none";
+}
+
+function pointerDown(e) {
+  if(state==="menu"||state==="finished"||state==="false")return;
+  e.preventDefault();
+
+  pointerIds.add(e.pointerId);
+
+  if(state==="ready") {
+    doFalseStart();
+    return;
+  }
+
+  if(state==="race") {
+    if(pointerIds.size>=2&&distance>=82&&!diveDone) {
+      dive=true;diveHoldAt=performance.now();
+      return;
+    }
+    step(e.clientX<W/2?"left":"right");
+  }
+}
+
+function pointerUp(e) {
+  pointerIds.delete(e.pointerId);
+  if(pointerIds.size<2)dive=false;
+}
+
+canvas.addEventListener("pointerdown",pointerDown);
+canvas.addEventListener("pointerup",pointerUp);
+canvas.addEventListener("pointercancel",pointerUp);
+canvas.addEventListener("contextmenu",e=>e.preventDefault());
+
+function loop(now) {
+  const dt=lastFrame?Math.min((now-lastFrame)/1000,.04):0;
+  lastFrame=now;
+
+  if(state==="race") {
+    time=(now-goTime)/1000;
+
+    // Tapping speed influences acceleration and momentum.
+    speed=Math.max(0,speed-dt*(0.10+(100-stamina)*0.002));
+    if(stamina<=0)speed=Math.min(speed,6.2);
+
+    distance+=speed*dt*0.92;
+    trackOffset+=speed*dt*12;
+    armPhase+=dt*(4+speed*1.1);
+    stamina=clamp(stamina-dt*(0.18+speed*0.055),0,100);
+    shake=Math.max(0,shake-dt*8);
+
+    for(const r of runners) {
+      const push=0.6+Math.sin(now/650+r.phase)*0.2;
+      r.distance=Math.min(100,r.distance+r.speed*r.skill*dt*push);
+      r.phase+=dt*(4+r.speed);
+      if(r.distance>88&&Math.random()<dt*.07)r.diving=true;
+    }
+
+    if(dive&&distance>=82&&!diveDone) {
+      if(now-diveHoldAt>250) {
+        diveDone=true;
+        speed+=0.65;
+        distance+=0.7;
+      }
+    }
+
+    updateHUD();
+
+    if(distance>=100) {
+      distance=100;
+      finishRace();
+    }
+  } else {
+    armPhase+=dt*2;
+  }
+
+  drawScene(ctx,W,H,false);
+  drawScene(pctx,preview.clientWidth,preview.clientHeight,true);
+  requestAnimationFrame(loop);
+}
+
+for(const id of ["skin","kit","hair"]) {
+  $(id).addEventListener("change",()=>{
+    skin=$("skin").value;kit=$("kit").value;hair=$("hair").value;
+    drawScene(pctx,preview.clientWidth,preview.clientHeight,true);
+  });
+}
+
+$("start").addEventListener("click",()=>{
+  $("falseStart").textContent="";
+  startRace();
+});
+$("again").addEventListener("click",startRace);
+$("customise").addEventListener("click",()=>{
+  $("result").style.display="none";
+  $("menu").style.display="flex";
+  $("hud").style.display="none";
+  $("tapHelp").style.display="none";
+  state="menu";
+});
+
+save();
+drawScene(pctx,preview.clientWidth,preview.clientHeight,true);
+requestAnimationFrame(loop);
+})();
+</script>
 </body>
 </html>
