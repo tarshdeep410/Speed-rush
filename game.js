@@ -15,6 +15,13 @@ playButton.addEventListener("click", function() {
         } else {
             clearInterval(countdown);
             title.textContent = "GO!";
+            startRace();
         }
     }, 1000);
 });
+
+function startRace() {
+    setTimeout(function() {
+        title.textContent = "0.00s";
+    }, 500);
+}
