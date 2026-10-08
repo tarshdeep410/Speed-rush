@@ -1,92 +1,387 @@
 * {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html,
 body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: #111;
-    touch-action: none;
-    user-select: none;
-}
-
-body {
-    font-family: Arial, sans-serif;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #111923;
+  font-family: Arial, Helvetica, sans-serif;
+  color: white;
+  touch-action: none;
+  user-select: none;
 }
 
 #game {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    display: block;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 #hud {
-    position: fixed;
-    top: max(18px, env(safe-area-inset-top));
-    left: 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    padding: 18px 24px;
-    color: white;
-    font-weight: 800;
-    pointer-events: none;
-    text-shadow: 0 2px 5px #000;
+  position: fixed;
+  top: max(12px, env(safe-area-inset-top));
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px 18px;
+  pointer-events: none;
+  text-shadow: 0 2px 8px #000;
+  z-index: 2;
 }
 
-#distance {
-    font-size: 20px;
+.hud-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 58px;
 }
 
-#time {
-    font-size: 30px;
-    font-variant-numeric: tabular-nums;
+.timer-box {
+  align-items: center;
 }
 
-#message {
-    position: fixed;
-    top: 38%;
-    left: 0;
-    width: 100%;
-    text-align: center;
-    color: white;
-    font-size: clamp(42px, 12vw, 100px);
-    font-weight: 900;
-    letter-spacing: 5px;
-    text-shadow: 0 4px 15px #000;
-    pointer-events: none;
+.small-label {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: #c7d5e4;
+  font-weight: bold;
+}
+
+.hud-item strong {
+  font-size: 21px;
+  font-variant-numeric: tabular-nums;
+}
+
+.timer-box strong {
+  font-size: 29px;
+}
+
+#meter-panel {
+  position: fixed;
+  z-index: 3;
+  top: max(88px, calc(env(safe-area-inset-top) + 80px));
+  left: 18px;
+  right: 18px;
+  padding: 12px 13px;
+  border: 1px solid rgba(255,255,255,0.17);
+  border-radius: 12px;
+  background: rgba(8, 15, 25, 0.78);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+  pointer-events: none;
+}
+
+.meter-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  letter-spacing: 1.7px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.meter-heading strong {
+  font-size: 13px;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+#cadenceTrack {
+  height: 20px;
+  width: 100%;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.55);
+  background: #b92335;
+}
+
+.danger-zone {
+  width: 35%;
+  background: linear-gradient(180deg, #ff5966, #a91027);
+}
+
+.safe-zone {
+  width: 30%;
+  background: linear-gradient(180deg, #83ffb5, #0baf66);
+  box-shadow: inset 0 0 12px rgba(255,255,255,0.18);
+}
+
+#needle {
+  position: absolute;
+  left: 50%;
+  top: -3px;
+  height: 25px;
+  width: 4px;
+  border-radius: 3px;
+  background: white;
+  box-shadow: 0 0 5px white, 0 0 12px rgba(255,255,255,0.9);
+  transform: translateX(-50%);
+  will-change: left;
+}
+
+.meter-legend {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #c5d0dc;
+}
+
+.stamina-heading {
+  margin-top: 14px;
+}
+
+#staminaTrack {
+  width: 100%;
+  height: 8px;
+  background: #293341;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+#staminaFill {
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+  background: #65f2a2;
+  transition: width 0.12s linear, background 0.2s;
+}
+
+#feedback {
+  min-height: 12px;
+  margin-top: 8px;
+  text-align: center;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #bdebd1;
+}
+
+#menu,
+#raceResult {
+  position: fixed;
+  z-index: 5;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 25px;
+  text-align: center;
+  background: linear-gradient(
+    180deg,
+    rgba(7, 13, 24, 0.18),
+    rgba(7, 13, 24, 0.93)
+  );
+}
+
+.game-logo {
+  font-size: clamp(38px, 10vw, 65px);
+  font-weight: 1000;
+  font-style: italic;
+  letter-spacing: -3px;
+  text-shadow: 0 5px 25px rgba(0,0,0,0.5);
+}
+
+.game-logo span {
+  color: #4ceaf5;
+}
+
+.subtitle {
+  margin: 7px 0 23px;
+  color: #b9d4e3;
+  font-size: 9px;
+  letter-spacing: 2px;
+  font-weight: bold;
+}
+
+.customise {
+  width: min(340px, 100%);
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.customise label {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+}
+
+.customise select {
+  width: 100%;
+  padding: 10px 7px;
+  border: 1px solid #536577;
+  border-radius: 8px;
+  color: white;
+  background: #162433;
+  font-size: 12px;
+  outline: none;
+}
+
+.instructions {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #d0dce6;
+  margin: 6px 0 20px;
+}
+
+#startButton,
+#retryButton,
+#menuButton {
+  width: min(290px, 100%);
+  min-height: 52px;
+  border: 0;
+  border-radius: 11px;
+  font-size: 14px;
+  font-weight: 1000;
+  letter-spacing: 2px;
+  color: #07151b;
+  background: linear-gradient(100deg, #62f0ed, #83ffb1);
+  box-shadow: 0 5px 25px rgba(60, 239, 220, 0.2);
+}
+
+.footnote {
+  margin-top: 15px;
+  color: #9bafbf;
+  font-size: 9px;
+  letter-spacing: 2px;
 }
 
 #controls {
-    position: fixed;
-    bottom: max(20px, env(safe-area-inset-bottom));
-    left: 0;
-    width: 100%;
-    display: flex;
-    gap: 12px;
-    padding: 15px;
+  position: fixed;
+  z-index: 4;
+  left: 0;
+  right: 0;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  display: flex;
+  gap: 12px;
+  padding: 0 14px;
 }
 
-#controls button {
-    flex: 1;
-    height: 82px;
-    border: 2px solid rgba(255,255,255,.65);
-    border-radius: 18px;
-    background: rgba(0,0,0,.45);
-    color: white;
-    font-size: 20px;
-    font-weight: 900;
-    touch-action: none;
+.leg-button {
+  flex: 1;
+  height: clamp(65px, 11vh, 88px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid rgba(255,255,255,0.5);
+  border-radius: 15px;
+  background: rgba(9, 20, 31, 0.84);
+  color: white;
+  font-size: 16px;
+  font-weight: 1000;
+  letter-spacing: 2px;
+  touch-action: none;
 }
 
-#controls button:active {
-    transform: scale(.96);
-    background: rgba(255,255,255,.2);
+.leg-button:active {
+  background: rgba(76, 234, 245, 0.35);
+  transform: scale(0.98);
+}
+
+.leg-arrow {
+  font-size: 19px;
+  color: #4ceaf5;
+}
+
+#countdown {
+  position: fixed;
+  z-index: 6;
+  inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  font-size: clamp(75px, 23vw, 150px);
+  font-weight: 1000;
+  font-style: italic;
+  color: white;
+  text-shadow: 0 0 35px rgba(76,234,245,0.8);
+  pointer-events: none;
+}
+
+#raceResult {
+  display: none;
+  background: rgba(6, 13, 22, 0.88);
+}
+
+.result-label {
+  font-size: 12px;
+  letter-spacing: 4px;
+  color: #a9c1d3;
+  font-weight: bold;
+}
+
+#finalTime {
+  margin: 12px 0;
+  font-size: clamp(65px, 18vw, 100px);
+  font-weight: 1000;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -3px;
+}
+
+#resultMessage {
+  margin-bottom: 25px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #7df4c0;
+}
+
+#menuButton {
+  margin-top: 10px;
+  background: #243545;
+  color: white;
+  box-shadow: none;
+}
+
+.hidden {
+  display: none !important;
+}
+
+@media (max-height: 650px) {
+  #meter-panel {
+    top: 77px;
+    padding: 8px 10px;
+  }
+
+  .stamina-heading {
+    margin-top: 8px;
+  }
+
+  #menu,
+  #raceResult {
+    padding: 12px;
+  }
+
+  .subtitle {
+    margin-bottom: 10px;
+  }
+
+  .instructions {
+    margin: 3px 0 10px;
+  }
+
+  .customise {
+    margin-bottom: 7px;
+  }
 }
