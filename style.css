@@ -1,0 +1,26 @@
+</> CSS
+
+body {
+    margin: 0;
+    background: #080808;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+h1 {
+    margin-top: 100px;
+    font-size: 45px;
+    letter-spacing: 4px;
+}
+
+button {
+    margin-top: 40px;
+    padding: 18px 55px;
+    font-size: 22px;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    background: white;
+    color: black;
+}
