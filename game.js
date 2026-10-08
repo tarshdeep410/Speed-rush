@@ -1,4 +1,3 @@
-</> Javascript
 
 const playButton = document.querySelector("button");
 
